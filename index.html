@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Estante Pessoal | Dashboard</title>
+    <link rel="stylesheet" href="./src/vendor/tabler/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="./src/assets/css/global.css">
+    <link rel="stylesheet" href="./src/assets/css/custom.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside id="sidebar" class="app-sidebar"></aside>
+      <main class="app-main">
+        <header class="page-header">
+          <div class="page-heading">
+            <p class="page-kicker">Visão geral</p>
+            <h1 class="page-title">Estante Pessoal</h1>
+            <p class="page-description">Acompanhe sua biblioteca, livros emprestados e cadastros principais.</p>
+          </div>
+        </header>
+
+        <section class="dashboard-grid" id="summaryCards" aria-label="Resumo da estante"></section>
+
+        <section class="content-grid" aria-label="Dados recentes da estante">
+          <article class="card table-card">
+            <header class="card-header">
+              <h2 class="card-title">Livros recentes</h2>
+            </header>
+            <div class="table-responsive">
+              <table class="table table-vcenter">
+                <thead>
+                  <tr>
+                    <th>Título</th>
+                    <th>Autor</th>
+                    <th>Categoria</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="recentBooksTable"></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="card table-card">
+            <header class="card-header">
+              <h2 class="card-title">Empréstimos ativos</h2>
+            </header>
+            <div class="table-responsive">
+              <table class="table table-vcenter">
+                <thead>
+                  <tr>
+                    <th>Livro</th>
+                    <th>Pessoa</th>
+                    <th>Data</th>
+                  </tr>
+                </thead>
+                <tbody id="activeLoansTable"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <footer class="app-footer">
+          <span>Estante Pessoal</span>
+          <span>Frontend acadêmico com HTML, CSS e JavaScript puro.</span>
+        </footer>
+      </main>
+    </div>
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="./src/vendor/tabler/dist/js/tabler.min.js" defer></script>
+    <script type="module" src="./src/js/controllers/dashboardController.js"></script>
+  </body>
+</html>

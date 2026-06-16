@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Estante Pessoal | Empréstimos</title>
+    <link rel="stylesheet" href="../src/vendor/tabler/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="../src/assets/css/global.css">
+    <link rel="stylesheet" href="../src/assets/css/custom.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside id="sidebar" class="app-sidebar"></aside>
+      <main class="app-main">
+        <header class="page-header">
+          <div class="page-heading">
+            <p class="page-kicker">Controle</p>
+            <h1 class="page-title">Empréstimos</h1>
+            <p class="page-description">Acompanhe livros emprestados, prazos e devoluções.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-primary" type="button" id="addLoanButton">Adicionar Empréstimo +</button>
+          </div>
+        </header>
+
+        <section class="content-section" aria-label="Lista de empréstimos">
+          <article class="card table-card">
+            <header class="card-header">
+              <h2 class="card-title">Empréstimos cadastrados</h2>
+            </header>
+            <div class="table-responsive">
+              <table class="table table-vcenter">
+                <thead>
+                  <tr>
+                    <th>Livro</th>
+                    <th>Pessoa</th>
+                    <th>Empréstimo</th>
+                    <th>Devolução</th>
+                    <th>Status</th>
+                    <th class="text-end">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="loansTable"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section class="modal fade" id="loanModal" tabindex="-1" aria-labelledby="loanFormTitle" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+              <header class="modal-header">
+                <h2 class="modal-title" id="loanFormTitle">Novo empréstimo</h2>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Fechar"></button>
+              </header>
+              <form id="loanForm" class="modal-body modal-form form-grid">
+                <input type="hidden" id="loanId">
+                <div>
+                  <label class="form-label" for="loanBookId">Livro</label>
+                  <select class="form-select" id="loanBookId" name="bookId" required></select>
+                </div>
+                <div>
+                  <label class="form-label" for="loanBorrowerName">Pessoa</label>
+                  <input class="form-control" id="loanBorrowerName" name="borrowerName" type="text" required>
+                </div>
+                <div>
+                  <label class="form-label" for="loanDate">Data do empréstimo</label>
+                  <input class="form-control" id="loanDate" name="loanDate" type="date" required>
+                </div>
+                <div>
+                  <label class="form-label" for="loanDueDate">Previsão de devolução</label>
+                  <input class="form-control" id="loanDueDate" name="dueDate" type="date" required>
+                </div>
+                <div>
+                  <label class="form-label" for="loanStatus">Status</label>
+                  <select class="form-select" id="loanStatus" name="status" required></select>
+                </div>
+                <footer class="modal-footer form-actions form-field-wide">
+                  <button class="btn btn-primary" type="submit">Salvar</button>
+                  <button class="btn btn-outline-secondary" type="button" id="loanCancelButton">Cancelar</button>
+                </footer>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <footer class="app-footer">
+          <span>Estante Pessoal</span>
+          <span>Controle simples para saber onde cada livro está.</span>
+        </footer>
+      </main>
+    </div>
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="../src/vendor/tabler/dist/js/tabler.min.js" defer></script>
+    <script type="module" src="../src/js/controllers/loanController.js"></script>
+  </body>
+</html>

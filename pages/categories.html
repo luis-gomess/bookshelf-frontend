@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Estante Pessoal | Categorias</title>
+    <link rel="stylesheet" href="../src/vendor/tabler/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="../src/assets/css/global.css">
+    <link rel="stylesheet" href="../src/assets/css/custom.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside id="sidebar" class="app-sidebar"></aside>
+      <main class="app-main">
+        <header class="page-header">
+          <div class="page-heading">
+            <p class="page-kicker">Cadastro</p>
+            <h1 class="page-title">Categorias</h1>
+            <p class="page-description">Classifique sua biblioteca pessoal por temas e estilos.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-primary" type="button" id="addCategoryButton">Adicionar Categoria +</button>
+          </div>
+        </header>
+
+        <section class="content-section" aria-label="Lista de categorias">
+          <article class="card table-card">
+            <header class="card-header">
+              <h2 class="card-title">Categorias cadastradas</h2>
+            </header>
+            <div class="table-responsive">
+              <table class="table table-vcenter">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Cor</th>
+                    <th class="text-end">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="categoriesTable"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryFormTitle" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+              <header class="modal-header">
+                <h2 class="modal-title" id="categoryFormTitle">Nova categoria</h2>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Fechar"></button>
+              </header>
+              <form id="categoryForm" class="modal-body modal-form form-grid">
+                <input type="hidden" id="categoryId">
+                <div>
+                  <label class="form-label" for="categoryName">Nome</label>
+                  <input class="form-control" id="categoryName" name="name" type="text" required>
+                </div>
+                <div>
+                  <label class="form-label" for="categoryColor">Cor</label>
+                  <input class="form-control form-control-color" id="categoryColor" name="color" type="color" value="#2563eb" required>
+                </div>
+                <div class="form-field-wide">
+                  <label class="form-label" for="categoryDescription">Descrição</label>
+                  <input class="form-control" id="categoryDescription" name="description" type="text">
+                </div>
+                <footer class="modal-footer form-actions form-field-wide">
+                  <button class="btn btn-primary" type="submit">Salvar</button>
+                  <button class="btn btn-outline-secondary" type="button" id="categoryCancelButton">Cancelar</button>
+                </footer>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <footer class="app-footer">
+          <span>Estante Pessoal</span>
+          <span>Categorias ajudam a encontrar livros com mais rapidez.</span>
+        </footer>
+      </main>
+    </div>
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="../src/vendor/tabler/dist/js/tabler.min.js" defer></script>
+    <script type="module" src="../src/js/controllers/categoryController.js"></script>
+  </body>
+</html>
