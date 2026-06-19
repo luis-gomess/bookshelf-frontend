@@ -1,23 +1,21 @@
 export const BOOK_STATUS = {
-  AVAILABLE: "available",
-  READING: "reading",
-  LOANED: "loaned",
+  NOT_READ: "NAO_LIDO",
+  READING: "LENDO",
+  READ: "LIDO",
 };
 
 export const LOAN_STATUS = {
-  ACTIVE: "active",
-  RETURNED: "returned",
-  LATE: "late",
+  BORROWED: "EMPRESTADO",
+  RETURNED: "DEVOLVIDO",
 };
 
 export const BOOK_STATUS_LABELS = {
-  [BOOK_STATUS.AVAILABLE]: "Disponível",
+  [BOOK_STATUS.NOT_READ]: "Não lido",
   [BOOK_STATUS.READING]: "Lendo",
-  [BOOK_STATUS.LOANED]: "Emprestado",
+  [BOOK_STATUS.READ]: "Lido",
 };
 
 export const LOAN_STATUS_LABELS = {
-  [LOAN_STATUS.ACTIVE]: "Ativo",
+  [LOAN_STATUS.BORROWED]: "Emprestado",
   [LOAN_STATUS.RETURNED]: "Devolvido",
-  [LOAN_STATUS.LATE]: "Atrasado",
 };

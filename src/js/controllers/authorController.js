@@ -1,7 +1,7 @@
 import { renderSidebar } from "../components/sidebar.js";
 import { showToast } from "../components/toast.js";
 import { createAuthor, deleteAuthor, getAuthors, updateAuthor } from "../services/authorService.js";
-import { escapeHtml, formatText } from "../utils/formatters.js";
+import { escapeHtml } from "../utils/formatters.js";
 import { requireFields } from "../utils/validators.js";
 
 let authors = [];
@@ -11,7 +11,12 @@ document.addEventListener("DOMContentLoaded", initAuthorPage);
 async function initAuthorPage() {
   renderSidebar("authors", "..");
   bindAuthorEvents();
-  await refreshAuthors();
+
+  try {
+    await refreshAuthors();
+  } catch (error) {
+    showToast(error.message, "error");
+  }
 }
 
 function bindAuthorEvents() {
@@ -31,7 +36,7 @@ function renderAuthors() {
   const table = document.querySelector("#authorsTable");
 
   if (!authors.length) {
-    table.innerHTML = `<tr><td class="empty-row" colspan="4">Nenhum autor cadastrado.</td></tr>`;
+    table.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhum autor cadastrado.</td></tr>`;
     return;
   }
 
@@ -41,7 +46,6 @@ function renderAuthors() {
         <tr>
           <td>${escapeHtml(author.name)}</td>
           <td>${escapeHtml(author.country)}</td>
-          <td>${escapeHtml(formatText(author.notes))}</td>
           <td>
             <div class="action-buttons">
               <button class="btn btn-sm btn-outline-primary" type="button" data-action="edit" data-id="${author.id}">Editar</button>
@@ -60,7 +64,6 @@ async function handleAuthorSubmit(event) {
   const authorData = {
     name: document.querySelector("#authorName").value.trim(),
     country: document.querySelector("#authorCountry").value.trim(),
-    notes: document.querySelector("#authorNotes").value.trim(),
   };
 
   try {
@@ -99,9 +102,13 @@ async function handleAuthorTableClick(event) {
   }
 
   if (action === "delete") {
-    await deleteAuthor(authorId);
-    showToast("Autor excluído com sucesso.");
-    await refreshAuthors();
+    try {
+      await deleteAuthor(authorId);
+      showToast("Autor excluído com sucesso.");
+      await refreshAuthors();
+    } catch (error) {
+      showToast(error.message, "error");
+    }
   }
 }
 
@@ -126,7 +133,6 @@ function fillAuthorForm(authorId) {
   document.querySelector("#authorId").value = author.id;
   document.querySelector("#authorName").value = author.name;
   document.querySelector("#authorCountry").value = author.country;
-  document.querySelector("#authorNotes").value = author.notes;
 }
 
 function resetAuthorForm() {

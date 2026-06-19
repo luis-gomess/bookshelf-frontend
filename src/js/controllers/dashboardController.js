@@ -1,9 +1,10 @@
 import { renderSidebar } from "../components/sidebar.js";
+import { showToast } from "../components/toast.js";
 import { getBooks } from "../services/bookService.js";
 import { getAuthors } from "../services/authorService.js";
 import { getCategories } from "../services/categoryService.js";
 import { getLoans } from "../services/loanService.js";
-import { BOOK_STATUS_LABELS, LOAN_STATUS } from "../constants/status.js";
+import { BOOK_STATUS, BOOK_STATUS_LABELS, LOAN_STATUS } from "../constants/status.js";
 import { escapeHtml, formatDate } from "../utils/formatters.js";
 
 document.addEventListener("DOMContentLoaded", initDashboard);
@@ -11,21 +12,25 @@ document.addEventListener("DOMContentLoaded", initDashboard);
 async function initDashboard() {
   renderSidebar("dashboard", ".");
 
-  const [books, authors, categories, loans] = await Promise.all([
-    getBooks(),
-    getAuthors(),
-    getCategories(),
-    getLoans(),
-  ]);
+  try {
+    const [books, authors, categories, loans] = await Promise.all([
+      getBooks(),
+      getAuthors(),
+      getCategories(),
+      getLoans(),
+    ]);
 
-  renderSummaryCards({ books, authors, categories, loans });
-  renderRecentBooks(books, authors, categories);
-  renderActiveLoans(loans, books);
+    renderSummaryCards({ books, authors, categories, loans });
+    renderRecentBooks(books, authors, categories);
+    renderActiveLoans(loans, books);
+  } catch (error) {
+    showToast(error.message, "error");
+  }
 }
 
 function renderSummaryCards({ books, authors, categories, loans }) {
   const summaryCards = document.querySelector("#summaryCards");
-  const activeLoans = loans.filter((loan) => loan.status === LOAN_STATUS.ACTIVE).length;
+  const activeLoans = loans.filter((loan) => loan.status === LOAN_STATUS.BORROWED).length;
 
   summaryCards.innerHTML = [
     { label: "Livros", value: books.length },
@@ -61,9 +66,9 @@ function renderRecentBooks(books, authors, categories) {
       return `
         <tr>
           <td>${escapeHtml(book.title)}</td>
-          <td>${escapeHtml(author?.name || "-")}</td>
-          <td>${escapeHtml(category?.name || "-")}</td>
-          <td><span class="status-badge status-badge-${book.status}">${BOOK_STATUS_LABELS[book.status]}</span></td>
+          <td>${escapeHtml(book.authorName || author?.name || "-")}</td>
+          <td>${escapeHtml(book.categoryName || category?.name || "-")}</td>
+          <td><span class="status-badge status-badge-${getBookStatusStyle(book.status)}">${BOOK_STATUS_LABELS[book.status] || book.status}</span></td>
         </tr>
       `;
     })
@@ -72,7 +77,7 @@ function renderRecentBooks(books, authors, categories) {
 
 function renderActiveLoans(loans, books) {
   const table = document.querySelector("#activeLoansTable");
-  const rows = loans.filter((loan) => loan.status === LOAN_STATUS.ACTIVE);
+  const rows = loans.filter((loan) => loan.status === LOAN_STATUS.BORROWED);
 
   if (!rows.length) {
     table.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhum empréstimo ativo.</td></tr>`;
@@ -92,4 +97,14 @@ function renderActiveLoans(loans, books) {
       `;
     })
     .join("");
+}
+
+function getBookStatusStyle(status) {
+  const styles = {
+    [BOOK_STATUS.NOT_READ]: "available",
+    [BOOK_STATUS.READING]: "reading",
+    [BOOK_STATUS.READ]: "returned",
+  };
+
+  return styles[status] || "available";
 }

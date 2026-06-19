@@ -35,8 +35,8 @@
                     <th>Título</th>
                     <th>Autor</th>
                     <th>Categoria</th>
-                    <th>Ano</th>
-                    <th>Status</th>
+                    <th>Ano de publicação</th>
+                    <th>Status de leitura</th>
                     <th class="text-end">Ações</th>
                   </tr>
                 </thead>
@@ -60,6 +60,14 @@
                   <input class="form-control" id="bookTitle" name="title" type="text" required>
                 </div>
                 <div>
+                  <label class="form-label" for="bookIsbn">ISBN</label>
+                  <input class="form-control" id="bookIsbn" name="isbn" type="text" required>
+                </div>
+                <div>
+                  <label class="form-label" for="bookPublishedYear">Ano de publicação</label>
+                  <input class="form-control" id="bookPublishedYear" name="publishedYear" type="number" min="0" max="2100" required>
+                </div>
+                <div>
                   <label class="form-label" for="bookAuthorId">Autor</label>
                   <select class="form-select" id="bookAuthorId" name="authorId" required></select>
                 </div>
@@ -68,12 +76,16 @@
                   <select class="form-select" id="bookCategoryId" name="categoryId" required></select>
                 </div>
                 <div>
-                  <label class="form-label" for="bookStatus">Status</label>
+                  <label class="form-label" for="bookStatus">Status de leitura</label>
                   <select class="form-select" id="bookStatus" name="status" required></select>
                 </div>
                 <div>
-                  <label class="form-label" for="bookPublishedYear">Ano</label>
-                  <input class="form-control" id="bookPublishedYear" name="publishedYear" type="number" min="0" max="2100" required>
+                  <label class="form-label" for="bookNote">Nota</label>
+                  <input class="form-control" id="bookNote" name="note" type="number" min="0" max="10" step="0.1">
+                </div>
+                <div class="form-field-wide">
+                  <label class="form-label" for="bookObservation">Observação</label>
+                  <textarea class="form-control" id="bookObservation" name="observation" rows="3"></textarea>
                 </div>
                 <footer class="modal-footer form-actions form-field-wide">
                   <button class="btn btn-primary" type="submit">Salvar</button>

@@ -14,7 +14,12 @@ document.addEventListener("DOMContentLoaded", initLoanPage);
 async function initLoanPage() {
   renderSidebar("loans", "..");
   bindLoanEvents();
-  await refreshLoanData();
+
+  try {
+    await refreshLoanData();
+  } catch (error) {
+    showToast(error.message, "error");
+  }
 }
 
 function bindLoanEvents() {
@@ -34,10 +39,6 @@ async function refreshLoanData() {
 function renderLoanOptions() {
   document.querySelector("#loanBookId").innerHTML = books
     .map((book) => `<option value="${book.id}">${escapeHtml(book.title)}</option>`)
-    .join("");
-
-  document.querySelector("#loanStatus").innerHTML = Object.values(LOAN_STATUS)
-    .map((status) => `<option value="${status}">${LOAN_STATUS_LABELS[status]}</option>`)
     .join("");
 }
 
@@ -82,11 +83,10 @@ async function handleLoanSubmit(event) {
     borrowerName: document.querySelector("#loanBorrowerName").value.trim(),
     loanDate: document.querySelector("#loanDate").value,
     dueDate: document.querySelector("#loanDueDate").value,
-    status: document.querySelector("#loanStatus").value,
   };
 
   try {
-    requireFields(loanData, ["bookId", "borrowerName", "loanDate", "dueDate", "status"]);
+    requireFields(loanData, ["bookId", "borrowerName", "loanDate", "dueDate"]);
     requireDateOrder(loanData.loanDate, loanData.dueDate);
 
     const loanId = document.querySelector("#loanId").value;
@@ -122,15 +122,23 @@ async function handleLoanTableClick(event) {
   }
 
   if (action === "return") {
-    await returnLoan(loanId);
-    showToast("Empréstimo marcado como devolvido.");
-    await refreshLoanData();
+    try {
+      await returnLoan(loanId);
+      showToast("Empréstimo marcado como devolvido.");
+      await refreshLoanData();
+    } catch (error) {
+      showToast(error.message, "error");
+    }
   }
 
   if (action === "delete") {
-    await deleteLoan(loanId);
-    showToast("Empréstimo excluído com sucesso.");
-    await refreshLoanData();
+    try {
+      await deleteLoan(loanId);
+      showToast("Empréstimo excluído com sucesso.");
+      await refreshLoanData();
+    } catch (error) {
+      showToast(error.message, "error");
+    }
   }
 }
 
@@ -157,7 +165,6 @@ function fillLoanForm(loanId) {
   document.querySelector("#loanBorrowerName").value = loan.borrowerName;
   document.querySelector("#loanDate").value = loan.loanDate;
   document.querySelector("#loanDueDate").value = loan.dueDate;
-  document.querySelector("#loanStatus").value = loan.status;
 }
 
 function resetLoanForm() {
@@ -167,8 +174,8 @@ function resetLoanForm() {
 }
 
 function renderLoanStatus(status) {
-  const className = `status-badge status-badge-${status}`;
-  return `<span class="${className}">${LOAN_STATUS_LABELS[status]}</span>`;
+  const style = status === LOAN_STATUS.RETURNED ? "returned" : "active";
+  return `<span class="status-badge status-badge-${style}">${LOAN_STATUS_LABELS[status] || status}</span>`;
 }
 
 function openModal(modalId) {

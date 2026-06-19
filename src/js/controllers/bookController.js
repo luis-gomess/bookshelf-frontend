@@ -16,7 +16,12 @@ document.addEventListener("DOMContentLoaded", initBookPage);
 async function initBookPage() {
   renderSidebar("books", "..");
   bindBookEvents();
-  await refreshBookData();
+
+  try {
+    await refreshBookData();
+  } catch (error) {
+    showToast(error.message, "error");
+  }
 }
 
 function bindBookEvents() {
@@ -59,12 +64,14 @@ function renderBooks() {
     .map((book) => {
       const author = authors.find((item) => item.id === book.authorId);
       const category = categories.find((item) => item.id === book.categoryId);
+      const authorName = book.authorName || author?.name || "-";
+      const categoryName = book.categoryName || category?.name || "-";
 
       return `
         <tr>
           <td>${escapeHtml(book.title)}</td>
-          <td>${escapeHtml(author?.name || "-")}</td>
-          <td>${escapeHtml(category?.name || "-")}</td>
+          <td>${escapeHtml(authorName)}</td>
+          <td>${escapeHtml(categoryName)}</td>
           <td>${book.publishedYear}</td>
           <td>${renderBookStatus(book.status)}</td>
           <td>
@@ -84,15 +91,20 @@ async function handleBookSubmit(event) {
 
   const bookData = {
     title: document.querySelector("#bookTitle").value.trim(),
+    isbn: document.querySelector("#bookIsbn").value.trim(),
     authorId: document.querySelector("#bookAuthorId").value,
     categoryId: document.querySelector("#bookCategoryId").value,
     status: document.querySelector("#bookStatus").value,
     publishedYear: document.querySelector("#bookPublishedYear").value,
+    note: document.querySelector("#bookNote").value,
+    observation: document.querySelector("#bookObservation").value.trim(),
   };
 
   try {
-    requireFields(bookData, ["title", "authorId", "categoryId", "status", "publishedYear"]);
+    requireFields(bookData, ["title", "isbn", "authorId", "categoryId", "status", "publishedYear"]);
     requirePositiveYear(bookData.publishedYear);
+    validateBookNote(bookData.note);
+    bookData.note = bookData.note === "" ? null : Number(bookData.note);
 
     const bookId = document.querySelector("#bookId").value;
 
@@ -127,9 +139,13 @@ async function handleBookTableClick(event) {
   }
 
   if (action === "delete") {
-    await deleteBook(bookId);
-    showToast("Livro excluído com sucesso.");
-    await refreshBookData();
+    try {
+      await deleteBook(bookId);
+      showToast("Livro excluído com sucesso.");
+      await refreshBookData();
+    } catch (error) {
+      showToast(error.message, "error");
+    }
   }
 }
 
@@ -153,10 +169,13 @@ function fillBookForm(bookId) {
   document.querySelector("#bookFormTitle").textContent = "Editar livro";
   document.querySelector("#bookId").value = book.id;
   document.querySelector("#bookTitle").value = book.title;
+  document.querySelector("#bookIsbn").value = book.isbn;
   document.querySelector("#bookAuthorId").value = book.authorId;
   document.querySelector("#bookCategoryId").value = book.categoryId;
   document.querySelector("#bookStatus").value = book.status;
   document.querySelector("#bookPublishedYear").value = book.publishedYear;
+  document.querySelector("#bookNote").value = book.note ?? "";
+  document.querySelector("#bookObservation").value = book.observation ?? "";
 }
 
 function resetBookForm() {
@@ -166,8 +185,30 @@ function resetBookForm() {
 }
 
 function renderBookStatus(status) {
-  const className = `status-badge status-badge-${status}`;
-  return `<span class="${className}">${BOOK_STATUS_LABELS[status]}</span>`;
+  const className = `status-badge status-badge-${getBookStatusStyle(status)}`;
+  return `<span class="${className}">${BOOK_STATUS_LABELS[status] || status}</span>`;
+}
+
+function getBookStatusStyle(status) {
+  const styles = {
+    [BOOK_STATUS.NOT_READ]: "available",
+    [BOOK_STATUS.READING]: "reading",
+    [BOOK_STATUS.READ]: "returned",
+  };
+
+  return styles[status] || "available";
+}
+
+function validateBookNote(note) {
+  if (note === "") {
+    return;
+  }
+
+  const numericNote = Number(note);
+
+  if (!Number.isFinite(numericNote) || numericNote < 0 || numericNote > 10) {
+    throw new Error("A nota deve estar entre 0 e 10.");
+  }
 }
 
 function openModal(modalId) {

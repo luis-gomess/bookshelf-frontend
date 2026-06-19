@@ -1,70 +1,32 @@
-import { apiConfig } from "../config/apiConfig.js";
 import { get, post, put, remove } from "../api/httpClient.js";
-import { BOOK_STATUS } from "../constants/status.js";
-
-let books = [
-  { id: 1, title: "Dom Casmurro", authorId: 1, categoryId: 2, publishedYear: 1899, status: BOOK_STATUS.AVAILABLE },
-  { id: 2, title: "Orgulho e Preconceito", authorId: 2, categoryId: 1, publishedYear: 1813, status: BOOK_STATUS.READING },
-  { id: 3, title: "1984", authorId: 3, categoryId: 3, publishedYear: 1949, status: BOOK_STATUS.LOANED },
-];
-
-let nextBookId = 4;
 
 export async function getBooks() {
-  if (!apiConfig.useMocks) {
-    return get("/books");
+  const books = await get("/livros");
+
+  if (!Array.isArray(books)) {
+    throw new Error("A API retornou um formato inválido para a lista de livros.");
   }
 
-  return [...books];
+  return books.map(mapBookFromApi);
 }
 
 export async function getBookById(id) {
-  if (!apiConfig.useMocks) {
-    return get(`/books/${id}`);
-  }
-
-  return books.find((book) => book.id === Number(id)) || null;
+  return mapBookFromApi(await get(`/livros/${id}`));
 }
 
 export async function createBook(bookData) {
-  if (!apiConfig.useMocks) {
-    return post("/books", bookData);
-  }
-
-  const book = {
-    id: nextBookId,
-    ...bookData,
-    authorId: Number(bookData.authorId),
-    categoryId: Number(bookData.categoryId),
-    publishedYear: Number(bookData.publishedYear),
-  };
-
-  nextBookId += 1;
-  books.push(book);
-  return book;
+  return mapBookFromApi(await post("/livros", mapBookToApi(bookData)));
 }
 
 export async function updateBook(id, bookData) {
-  if (!apiConfig.useMocks) {
-    return put(`/books/${id}`, bookData);
-  }
-
-  const index = books.findIndex((book) => book.id === Number(id));
-
-  if (index < 0) {
-    throw new Error("Livro não encontrado.");
-  }
-
-  books[index] = {
-    ...books[index],
+  const currentBook = await getBookById(id);
+  const updatedBook = {
+    ...currentBook,
     ...bookData,
     id: Number(id),
-    authorId: Number(bookData.authorId),
-    categoryId: Number(bookData.categoryId),
-    publishedYear: Number(bookData.publishedYear),
   };
 
-  return books[index];
+  return mapBookFromApi(await put(`/livros/${id}`, mapBookToApi(updatedBook)));
 }
 
 export async function updateBookStatus(id, status) {
@@ -81,10 +43,38 @@ export async function updateBookStatus(id, status) {
 }
 
 export async function deleteBook(id) {
-  if (!apiConfig.useMocks) {
-    return remove(`/books/${id}`);
+  return remove(`/livros/${id}`);
+}
+
+function mapBookFromApi(book) {
+  if (!book) {
+    return null;
   }
 
-  books = books.filter((book) => book.id !== Number(id));
-  return true;
+  return {
+    id: book.id,
+    title: book.titulo,
+    isbn: book.isbn ?? "",
+    publishedYear: book.anoPublicacao,
+    status: book.statusLeitura,
+    note: book.nota ?? null,
+    observation: book.observacao ?? "",
+    authorId: book.autor?.id ?? book.autorId ?? null,
+    categoryId: book.categoria?.id ?? book.categoriaId ?? null,
+    authorName: book.autor?.nome ?? null,
+    categoryName: book.categoria?.nome ?? null,
+  };
+}
+
+function mapBookToApi(bookData) {
+  return {
+    titulo: bookData.title,
+    isbn: bookData.isbn ?? "",
+    anoPublicacao: Number(bookData.publishedYear),
+    statusLeitura: bookData.status,
+    nota: bookData.note === "" || bookData.note == null ? null : Number(bookData.note),
+    observacao: bookData.observation ?? "",
+    autorId: Number(bookData.authorId),
+    categoriaId: Number(bookData.categoryId),
+  };
 }

@@ -6,10 +6,8 @@ Frontend academico para organizar livros pessoais, autores, categorias e emprest
 
 - HTML
 - CSS
-- JavaScript puro com ES Modules
+- JavaScript 
 - Tabler local
-
-O projeto nao usa React, Angular, Vue, TypeScript, Vite, Webpack, JSX, TSX ou build.
 
 ## Como executar
 
@@ -22,10 +20,8 @@ Como o projeto usa ES Modules, alguns navegadores podem exigir um servidor estat
 Fluxo esperado:
 
 ```text
-HTML -> Controller -> Service -> httpClient -> Backend Java futuramente
+HTML -> Controller -> Service -> httpClient -> Backend Java
 ```
-
-Enquanto o backend Java com Spring Boot e MySQL nao existe, os services executam CRUD em memoria com dados mockados. Ao recarregar a pagina, os dados voltam ao estado inicial.
 
 ## Tabler
 

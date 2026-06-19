@@ -11,7 +11,12 @@ document.addEventListener("DOMContentLoaded", initCategoryPage);
 async function initCategoryPage() {
   renderSidebar("categories", "..");
   bindCategoryEvents();
-  await refreshCategories();
+
+  try {
+    await refreshCategories();
+  } catch (error) {
+    showToast(error.message, "error");
+  }
 }
 
 function bindCategoryEvents() {
@@ -31,7 +36,7 @@ function renderCategories() {
   const table = document.querySelector("#categoriesTable");
 
   if (!categories.length) {
-    table.innerHTML = `<tr><td class="empty-row" colspan="4">Nenhuma categoria cadastrada.</td></tr>`;
+    table.innerHTML = `<tr><td class="empty-row" colspan="3">Nenhuma categoria cadastrada.</td></tr>`;
     return;
   }
 
@@ -41,7 +46,6 @@ function renderCategories() {
         <tr>
           <td>${escapeHtml(category.name)}</td>
           <td>${escapeHtml(formatText(category.description))}</td>
-          <td><span class="color-swatch" style="background:${escapeHtml(category.color)}"></span> ${escapeHtml(category.color)}</td>
           <td>
             <div class="action-buttons">
               <button class="btn btn-sm btn-outline-primary" type="button" data-action="edit" data-id="${category.id}">Editar</button>
@@ -59,12 +63,11 @@ async function handleCategorySubmit(event) {
 
   const categoryData = {
     name: document.querySelector("#categoryName").value.trim(),
-    color: document.querySelector("#categoryColor").value,
     description: document.querySelector("#categoryDescription").value.trim(),
   };
 
   try {
-    requireFields(categoryData, ["name", "color"]);
+    requireFields(categoryData, ["name"]);
 
     const categoryId = document.querySelector("#categoryId").value;
 
@@ -99,9 +102,13 @@ async function handleCategoryTableClick(event) {
   }
 
   if (action === "delete") {
-    await deleteCategory(categoryId);
-    showToast("Categoria excluída com sucesso.");
-    await refreshCategories();
+    try {
+      await deleteCategory(categoryId);
+      showToast("Categoria excluída com sucesso.");
+      await refreshCategories();
+    } catch (error) {
+      showToast(error.message, "error");
+    }
   }
 }
 
@@ -125,14 +132,12 @@ function fillCategoryForm(categoryId) {
   document.querySelector("#categoryFormTitle").textContent = "Editar categoria";
   document.querySelector("#categoryId").value = category.id;
   document.querySelector("#categoryName").value = category.name;
-  document.querySelector("#categoryColor").value = category.color;
   document.querySelector("#categoryDescription").value = category.description;
 }
 
 function resetCategoryForm() {
   document.querySelector("#categoryFormTitle").textContent = "Nova categoria";
   document.querySelector("#categoryForm").reset();
-  document.querySelector("#categoryColor").value = "#2563eb";
   document.querySelector("#categoryId").value = "";
 }
 
